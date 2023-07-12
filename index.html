@@ -1,0 +1,110 @@
+<!doctype html>
+<html>
+  <head>
+
+    <!-- some basic stuff  -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Screentime</title>
+
+    <!-- 
+      add your stylesheet 
+      base.css loads the basic stuff
+      you can tweak your own css in custom.css
+      WARNING: the order of the stylesheets matters
+    -->
+    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="custom.css">
+
+    <style>
+
+      h1{
+        padding-top: 5%;
+      }
+
+      svg{
+        padding-left: 20%;
+      }
+
+      
+    </style>
+
+
+    <!-- Step 2: add your d3 script below -->
+    <script src = "https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+
+    <!-- your JS code that uses d3 to manipulate data -->
+    <script>
+      d3.csv("screentime.csv")
+        .then(data => {
+      // check if the data is loaded:
+      console.log(data)
+      // == your code happens below ==
+      const myChart = d3
+            .select('#my-svg-chart')
+            .append('svg')
+            .attr('width', 800)
+            .attr('height', 640)
+            .attr('overflow', 'visible')
+
+      // Step 6. create SVG elements binded with data
+      const screen = myChart
+            .selectAll('circle')
+            .data(data)
+            .join('circle');
+        
+      const gridSize = 50, gap = 2;
+
+      screen
+        .attr('cx',(d,i) => {
+              return Math.floor(i%5)*(gridSize+ gap);
+            })
+        .attr('cy',(d,i) => {
+              return Math.floor(i/5)*(gridSize+ gap);
+            })
+        .attr('r', d => {
+          return(+d.Screentime/20)*gridSize;
+        })
+        // SVG rectangle specific attributes
+        //.attr('x', (d,i) => {
+              //return Math.floor(i%10)*(gridSize+ gap);
+            //})
+            //.attr('y', (d,i) => {
+              //return Math.floor(i/10)*(gridSize+ gap);
+            //})
+            //.attr('width', gridSize)
+            //.attr('height', gridSize)
+          
+        // Step 8. Encode data onto the SVG shapes
+        screen.style('fill', d=> {
+            if (d.Screentime <= 3) {return "#9BC53D"}
+            if (d.Screentime > 3 && d.Screentime < 5) {return "#5BC0EB"}
+            if (d.Screentime >= 5) {return "#E55934"}
+          })
+        
+          myChart.append("circle").attr("cx",-50).attr("cy",-50).attr("r", 10).style("fill", "#9BC53D")
+          myChart.append("circle").attr("cx",100).attr("cy",-50).attr("r", 10).style("fill", "#5BC0EB")
+          myChart.append("circle").attr("cx",250).attr("cy",-50).attr("r", 10).style("fill", "#E55934")
+          myChart.append("text").attr("x", -30).attr("y", -50).text("< 3 hours").style("font-size", "15px")
+          myChart.append("text").attr("x", 120).attr("y", -50).text("3-5 hours").style("font-size", "15px")
+          myChart.append("text").attr("x", 270).attr("y", -50).text(">5 hours").style("font-size", "15px")
+          
+
+
+
+        })
+
+
+    </script>
+    
+  </head>
+  <body>
+    <h1>My screen time</h1>
+    <p>In the last 22 days, I have spent > 60 hours on my phone.</p>
+    <div id="my-svg-chart" >
+      <svg height="100" width="100" ></svg>
+        
+    </div>
+
+  </body>
+</html>
